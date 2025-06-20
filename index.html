@@ -163,22 +163,18 @@
         let blockLeft = block.x;
         let blockBottom = block.y + block.height;
         let blockRight = block.x + block.width;
-        
-       // Condição de colisão aprimorada para incluir a parte superior do bloco
-        // Verifica se o jogador colide com a parte inferior do bloco
-
+      
 
         let collidedWithBottomBlock = (playerRight > blockLeft &&
-                                    playerLeft < blockRight && // O jogador está entre as bordas esquerda e direita do bloco
+                                    playerLeft < blockRight && 
                                     playerBottom > blockTop &&
-                                    player.y < blockTop) || (playerRight > blockLeft && playerBottom > blockTop); // O jogador está acima da parte superior do bloco (garante colisão na parte de baixo)
+                                    player.y < blockTop) || (playerRight > blockLeft && playerBottom > blockTop); 
 
-
-        let topBlockHeight = (canvasHeight - block.height - block.offset); // Precisa do offset do bloco para calcular a altura real
+        let topBlockHeight = (canvasHeight - block.height - block.offset); 
         let collidedWithTopBlock = playerRight > blockLeft &&
                                    playerLeft < blockRight &&
-                                   player.y < topBlockHeight && // O jogador está abaixo do fundo do bloco superior
-                                   playerBottom > 0; // O jogador está dentro da tela (para evitar colisão com o topo se ele estiver acima)
+                                   player.y < topBlockHeight && 
+                                   playerBottom > 0;
 
         if (collidedWithBottomBlock || collidedWithTopBlock) {
           console.log("morreu");
@@ -208,7 +204,6 @@
         ctx.textAlign = 'center';
         ctx.fillText('Viggo morreu!', canvasWidth / 2, canvasHeight / 2 - 20);
 
-        // Adicionar um botão de reiniciar
         let restartButton = document.createElement('button');
         restartButton.innerText = 'Reiniciar Jogo';
         restartButton.style.position = 'absolute';
@@ -217,7 +212,7 @@
         restartButton.style.transform = 'translate(-50%, 50%)';
         restartButton.style.padding = '10px 20px';
         restartButton.style.fontSize = '20px';
-        restartButton.onclick = restart; // A função restart já existe e recarrega a página
+        restartButton.onclick = restart; 
         document.body.appendChild(restartButton);
     }
 
@@ -255,6 +250,7 @@
         isJumping = false;
       }
 
+      
       document.body.onkeydown = function (e) {
         if (e.keyCode == 32) {
           isJumping = true;
@@ -263,6 +259,16 @@
           }, 200);
         }
       };
+
+            document.body.addEventListener('touchstart', function(e) {
+
+        e.preventDefault(); 
+        if (!isJumping) {
+          isJumping = true;
+          jumpSpeed = 15; 
+          fallSpeed = 0; 
+        }
+      });
 
     </script>
   </body>
