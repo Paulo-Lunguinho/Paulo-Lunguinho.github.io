@@ -7,37 +7,47 @@
     <title>Jogo</title>
   </head>
   <body onload="startGame()">
-    <h1>Viggo's escape</h1>
+    <h1>Yakuza Viggo's Tokyo Escape</h1>
     <script>
-      var canvasWidth = 600;
+      var canvasWidth = 400;
       var canvasHeight = 600;
 
       function startGame() {
         gameCanvas.start();
+
+        backgrondImage = new Image();
+        backgrondImage.src = 'background.jpg';
         playerImage = new Image();
-        playerImage.src= 'viggo.jpeg';
+        playerImage.src = 'viggo.jpeg';
         blockImage = new Image();
-        blockImage.src = 'pipe.png'
+        blockImage.src = 'pipe.png';
         blockTopImage = new Image();
         blockTopImage.src = 'pipereverso.png';
 
         Promise.all([
-           new Promise(resolve => { playerImage.onload = resolve; }),
-           new Promise(resolve => { blockImage.onload = resolve; }),
-           new Promise(resolve => { blockTopImage.onload = resolve; }),
+          new Promise((resolve) => {
+            playerImage.onload = resolve;
+          }),
+          new Promise((resolve) => {
+            blockImage.onload = resolve;
+          }),
+          new Promise((resolve) => {
+            blockTopImage.onload = resolve;
+          }),
+          new Promise((resolve) => {
+            backgrondImage.onload = resolve;
+          }),
         ]).then(() => {
-
           player = new createPlayer(50, 50, 10);
-  
+
           let width = 80;
           let height = randomNumber(80, 200);
-  
+
           let x = canvasWidth;
           let y = canvasHeight - height;
           block = new createBlock(width, height, x, y);
-          score = new createScoreBoard(10,30);
-        })
-
+          score = new createScoreBoard(10, 30);
+        });
       }
 
       let gameCanvas = {
@@ -60,21 +70,25 @@
 
       let blockSpeed = 4;
 
-
       function createBlock(width, height, x, y) {
         speed = blockSpeed;
         this.width = width;
         this.height = height;
         this.x = x;
         this.y = y;
-         this.offset = 200;
+        this.offset = 200;
 
         this.draw = function () {
-          
           ctx = gameCanvas.context;
           ctx.fillStyle = 'blue';
-          ctx.drawImage(blockImage,this.x, this.y, this.width, this.height);
-          ctx.drawImage(blockTopImage,this.x, 0, this.width, (canvasHeight - this.height - this.offset));
+          ctx.drawImage(blockImage, this.x, this.y, this.width, this.height);
+          ctx.drawImage(
+            blockTopImage,
+            this.x,
+            0,
+            this.width,
+            canvasHeight - this.height - this.offset
+          );
         };
 
         this.moveToLeft = function () {
@@ -85,7 +99,6 @@
           if (this.x + width < 0) {
             this.height = randomNumber(10, 400);
             speed = blockSpeed;
-          
 
             this.x = canvasWidth;
             this.y = canvasHeight - this.height;
@@ -94,20 +107,19 @@
       }
 
       function randomNumber(min, max) {
-        return Math.floor(Math.random() * (max - min ) + min);
+        return Math.floor(Math.random() * (max - min) + min);
       }
 
-      function createScoreBoard(x,y){
+      function createScoreBoard(x, y) {
         this.score = 'lorem';
         this.y = y;
         this.x = x;
-        this.draw = function(){
+        this.draw = function () {
           ctx = gameCanvas.context;
-          ctx.font = '25px Arial'
+          ctx.font = '25px Arial';
           ctx.fillStyle = 'red';
           ctx.fillText(this.text, this.x, this.y);
-        
-        }
+        };
       }
 
       function createPlayer(width, height, x) {
@@ -150,56 +162,52 @@
         };
       }
 
-
-
       function collision() {
         let playerLeft = player.x;
         let playerRight = player.x + player.width;
         let playerBottom = player.y + player.height;
 
-
-
         let blockTop = block.y;
         let blockLeft = block.x;
         let blockBottom = block.y + block.height;
         let blockRight = block.x + block.width;
-      
 
-        let collidedWithBottomBlock = (playerRight > blockLeft &&
-                                    playerLeft < blockRight && 
-                                    playerBottom > blockTop &&
-                                    player.y < blockTop) || (playerRight > blockLeft && playerBottom > blockTop); 
+        let collidedWithBottomBlock =
+          (playerRight > blockLeft &&
+            playerLeft < blockRight &&
+            playerBottom > blockTop &&
+            player.y < blockTop) ||
+          (playerRight > blockLeft && playerBottom > blockTop);
 
-        let topBlockHeight = (canvasHeight - block.height - block.offset); 
-        let collidedWithTopBlock = playerRight > blockLeft &&
-                                   playerLeft < blockRight &&
-                                   player.y < topBlockHeight && 
-                                   playerBottom > 0;
+        let topBlockHeight = canvasHeight - block.height - block.offset;
+        let collidedWithTopBlock =
+          playerRight > blockLeft &&
+          playerLeft < blockRight &&
+          player.y < topBlockHeight &&
+          playerBottom > 0;
 
         if (collidedWithBottomBlock || collidedWithTopBlock) {
-          console.log("morreu");
+          console.log('morreu');
           // Para o loop do jogo
           clearInterval(interval);
           gameOver();
+        }
       }
-    }
 
-    function addSpeed(){
-      blockSpeed += 1;
-      console.log("Mais rapido")
-    }
+      function addSpeed() {
+        blockSpeed += 1;
+        console.log('Mais rapido');
+      }
 
+      setInterval(addSpeed, 5000);
 
-      setInterval(addSpeed, 5000)
+      function restart() {
+        location.reload();
+      }
 
-
-    function restart(){
-      location.reload()
-    }
-
-    function gameOver() {
+      function gameOver() {
         ctx = gameCanvas.context;
-        ctx.fillStyle = 'black';
+        ctx.fillStyle = 'white';
         ctx.font = '40px Arial';
         ctx.textAlign = 'center';
         ctx.fillText('Viggo morreu!', canvasWidth / 2, canvasHeight / 2 - 20);
@@ -212,13 +220,15 @@
         restartButton.style.transform = 'translate(-50%, 50%)';
         restartButton.style.padding = '10px 20px';
         restartButton.style.fontSize = '20px';
-        restartButton.onclick = restart; 
+        restartButton.onclick = restart;
         document.body.appendChild(restartButton);
-    }
+      }
 
       function updateCanvas() {
         ctx = gameCanvas.context;
         ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+        ctx.drawImage(backgrondImage, 0, 0, canvasWidth, canvasHeight);
 
         player.makeFall();
         player.draw();
@@ -250,7 +260,13 @@
         isJumping = false;
       }
 
-      
+      document.addEventListener('touchstart', (e) => {
+        isJumping = true;
+        setTimeout(function () {
+          resetJump();
+        }, 200);
+      });
+
       document.body.onkeydown = function (e) {
         if (e.keyCode == 32) {
           isJumping = true;
@@ -259,17 +275,6 @@
           }, 200);
         }
       };
-
-            document.body.addEventListener('touchstart', function(e) {
-
-        e.preventDefault(); 
-        if (!isJumping) {
-          isJumping = true;
-          jumpSpeed = 15; 
-          fallSpeed = 0; 
-        }
-      });
-
     </script>
   </body>
 </html>
